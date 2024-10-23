@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout clients</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="module" href="../scripts/clients.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Ajouter un client</h1>
+    </header>
+    <main>
+        <section>
+            <form id="clientForm">
+                <label for="eventDate">Nom : </label>
+                <input type="text" id="nom" required>
+
+                <label for="songName">Prénom : </label>
+                <input type="text" id="prenom" required>
+
+                <button type="submit">Ajouter à la liste</button>
+            </form>
+        </section>
+    </main>
+    <script>
+    let clients = []
+    $("#clientForm").on("submit", function(event){
+        event.preventDefault();
+        clients.push({"id": Date.now() , "nom": $('#nom').val(), "prenom": $('#prenom').val()})
+        
+    });
+    </script>
+</body>
+</html>

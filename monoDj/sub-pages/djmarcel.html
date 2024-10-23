@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Marcel - Gestion des Soirées</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Gestion des Soirées</h1>
+    </header>
+
+    <main>
+        <section id="soirees">
+            <h2>Liste des soirées réservées</h2>
+            <div id="reservationsListDJ">
+                <select id="reservationItemsDJ"></ul>
+            </div>
+        </section>
+
+        <section id="playlists">
+            <h2>Ajouter une chanson à la playlist pour une soirée</h2>
+            <form id="playlistForm">
+                <label for="eventDate">Date de la soirée:</label>
+                <input type="date" id="eventDate" required>
+
+                <label for="songName">Nom de la chanson:</label>
+                <input type="text" id="songName" required>
+                
+                <label for="artistName">Nom de l'artiste:</label>
+                <input type="text" id="artistName" required>
+                
+                <button type="submit">Ajouter à la playlist</button>
+            </form>
+
+            <div id="playlistSongs">
+                <h3>Playlist pour la soirée sélectionnée</h3>
+                <ul id="playlistItems"></ul>
+            </div>
+        </section>
+
+        <a href="index.html">Retour à l'accueil</a>
+    </main>
+<script>
+$(document).ready(function(){
+    
+    setReservation(reservations)
+})
+reservations = fetchReservations();
+function setReservation(reservations) {
+  let optionsHTML = "";
+  reservations.forEach(reservation => {
+    optionsHTML += `<option value="${reservation.nom}">${reservation.nom}</option>`;
+  });
+  $('#reservationItemsDJ').append(optionsHTML);
+}
+
+function fetchReservations(){
+    $.get("demo_test.asp", function(data, status){
+    if(data){
+        return data
+    }
+  });
+}
+</script>
+    <script src="./scripts/dj.js"></script>
+</body>
+</html>

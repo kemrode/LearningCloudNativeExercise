@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation de Soirée</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="module" href="../scripts/clients.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Réservation de Soirée</h1>
+    </header>
+
+    <main>
+        <section id="reservations">
+            <h2>Réserver une soirée</h2>
+            <form id="reservationForm">
+                <label for="clientName">Nom du client:</label>
+                <input type="text" id="clientName" required>
+                
+                <label for="eventDate">Date de la soirée:</label>
+                <input type="date" id="eventDate" required>
+                
+                <label for="eventType">Type de soirée:</label>
+                <select id="eventType">
+                    <option value="Anniversaire">Anniversaire</option>
+                    <option value="Mariage">Mariage</option>
+                    <option value="Entreprise">Soirée d'entreprise</option>
+                </select>
+                
+                <button type="submit">Réserver</button>
+            </form>
+            <div id="reservationsList">
+                <h3>Réservations à venir</h3>
+                <ul id="reservationItems"></ul>
+            </div>
+        </section>
+
+        <a href="index.html">Retour à l'accueil</a>
+    </main>
+<script>
+    let reservations = []
+        $("#reservationForm").on("submit", function(event){
+        event.preventDefault();
+        reservations.push({"nom": $('#clientName').val(), "prenom": $('#prenom').val(), "event" : $('#eventType').find(":selected").val()})
+        
+    });
+</script>
+    <script src="../scripts/clients.js"></script>
+</body>
+</html>
