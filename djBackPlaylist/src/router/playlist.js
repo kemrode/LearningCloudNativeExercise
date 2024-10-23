@@ -15,9 +15,9 @@ const readPlaylistsFromFile = () => {
     }
 };
 
-const writePlaylistsToFile = (clients) => {
+const writePlaylistsToFile = (playLists) => {
     try {
-        fs.writeFileSync(playlistsFilePath, JSON.stringify(clients, null, 2));
+        fs.writeFileSync(playlistsFilePath, JSON.stringify(playLists, null, 2));
     } catch (error) {
         console.error(`Error writing file to disk: ${error}`);
     }
@@ -50,7 +50,7 @@ router.get('/', (req, res) => {
 // Obter um cliente por ID
 router.get('/:id', (req, res) => {
     try {
-        const playLists = readClientsFromFile();
+        const playLists = readPlaylistsFromFile();
         const playlist = playLists.find(c => c.id === req.params.id);
         if (!playlist) {
             return res.status(404).send();
@@ -64,14 +64,14 @@ router.get('/:id', (req, res) => {
 // Atualizar um cliente por ID
 router.put('/:id', (req, res) => {
     try {
-        const clients = readClientsFromFile();
-        const index = clients.findIndex(c => c.id === req.params.id);
+        const playLists = readPlaylistsFromFile();
+        const index = playLists.findIndex(c => c.id === req.params.id);
         if (index === -1) {
             return res.status(404).send();
         }
-        clients[index] = { ...clients[index], ...req.body };
-        writeClientsToFile(clients);
-        res.status(200).send(clients[index]);
+        playLists[index] = { ...playLists[index], ...req.body };
+        writePlaylistsToFile(playLists);
+        res.status(200).send(playLists[index]);
     } catch (error) {
         res.status(400).send(error);
     }
@@ -80,14 +80,14 @@ router.put('/:id', (req, res) => {
 // Deletar um cliente por ID
 router.delete('/:id', (req, res) => {
     try {
-        const clients = readClientsFromFile();
-        const index = clients.findIndex(c => c.id === req.params.id);
+        const playLists = readPlaylistsFromFile();
+        const index = playLists.findIndex(c => c.id === req.params.id);
         if (index === -1) {
             return res.status(404).send();
         }
-        const deletedClient = clients.splice(index, 1);
-        writeClientsToFile(clients);
-        res.status(200).send(deletedClient);
+        const deletedPlaylist = playLists.splice(index, 1);
+        writeClientsToFile(playLists);
+        res.status(200).send(deletedPlaylist);
     } catch (error) {
         res.status(500).send(error);
     }
