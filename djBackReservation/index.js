@@ -19,7 +19,7 @@ app.get("/booking", (req, res) => {
 app.get("/booking/:id", (req, res) => {
     try {
         var id = req.params.id;
-        var data = bookingJson[id];
+        var data = bookingJson.soirees.find(s => s.id == id);
         console.log(data);
         res.status(200).json(data);
     } catch (error) {
@@ -46,11 +46,16 @@ app.post("/booking", express.json(), (req, res) => {
     }
 });
 
-app.put("/booking/{id}", express.json(), (req, res) => {
-
+app.put("/booking/:id", express.json(), (req, res) => {
+    try {
+        res.status(201)
+    } catch (error) {
+        res.status(400);
+        console.log(error);
+    }
 });
 
-app.delete("/booking/{id}", (req, res) => {
+app.delete("/booking/:id", (req, res) => {
 
 });
 
