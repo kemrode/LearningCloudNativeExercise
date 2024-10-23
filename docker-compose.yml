@@ -1,0 +1,12 @@
+services:
+  api-client:
+    build: .
+    image: dj-marcel-client-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - dj-marcel-vol:/usr/src/data/
+    command: npm start
+
+volumes:
+  dj-marcel-vol:
