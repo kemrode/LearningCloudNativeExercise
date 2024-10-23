@@ -15,9 +15,9 @@ const readPlaylistsFromFile = () => {
     }
 };
 
-const writePlaylistsToFile = (clients) => {
+const writePlaylistsToFile = (playLists) => {
     try {
-        fs.writeFileSync(playlistsFilePath, JSON.stringify(clients, null, 2));
+        fs.writeFileSync(playlistsFilePath, JSON.stringify(playLists, null, 2));
     } catch (error) {
         console.error(`Error writing file to disk: ${error}`);
     }
