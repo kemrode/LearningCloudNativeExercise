@@ -1,20 +1,20 @@
-# Use a imagem oficial do Node.js baseada no Alpine
+# Utilisez l'image officielle de Node.js basée sur Alpine
 FROM node:14-alpine
 
-# Defina o diretório de trabalho dentro do contêiner
+# Définir le répertoire de travail à l'intérieur du conteneur
 WORKDIR /usr/src/server
 
-# Copie o package.json e o package-lock.json para o diretório de trabalho
+# Copier package.json et package-lock.json dans le répertoire de travail
 COPY package*.json ./
 
-# Instale as dependências do projeto
+# Installer les dépendances du projet
 RUN npm install
 
-# Copie o restante do código da aplicação para o diretório de trabalho
+# Copier le reste du code de l'application dans le répertoire de travail
 COPY . .
 
-# Exponha a porta que a aplicação irá rodar
+# Exposer le port sur lequel l'application va fonctionner
 EXPOSE 3000
 
-# Comando para rodar a aplicação
+# Commande pour exécuter l'application
 CMD ["npm", "start"]
