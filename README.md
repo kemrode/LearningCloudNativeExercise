@@ -25,12 +25,12 @@ Le front-end est le:
 ```json
 [
   {
-    "nome": "Nome Exemplo 1",
+    "name": "Nome Exemplo 1",
     "email": "email1@example.com",
     "id": "c9bf9e57-1685-4c89-bafb-ff5af830be8a"
   },
   {
-    "nome": "Nome Exemplo 2",
+    "name": "Nome Exemplo 2",
     "email": "email2@example.com",
     "id": "d1e8f9e8-1685-4c89-bafb-ff5af830be8b"
   }
