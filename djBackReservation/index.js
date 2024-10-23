@@ -1,6 +1,9 @@
 const express = require('express');
-const app = express();
 const fs = require('fs');
+const app = express();
+
+//CFG PORT
+const PORT = process.env.PORT || 3002;
 
 const bookJson = "booking.json";
 const bookingJson = require(`./${bookJson}`);
@@ -51,6 +54,6 @@ app.delete("/booking/{id}", (req, res) => {
 
 });
 
-app.listen(3002, () => {
+app.listen(PORT, () => {
     console.log("serveur à l'écoute");
 });
