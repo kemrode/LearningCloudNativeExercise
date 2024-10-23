@@ -1,1 +1,32 @@
-{"soirees":[{"id":1,"nom":"Soirée d'enfer 2","date":"23/10/2024","playlist":[],"client":"M.","playliste":[1,2]},{"id":2,"nom":"Journée infernale","date":"24/10/2024","playlist":[1],"client":"Mme Trucmuche"},{"id":3,"nom":"j'en ai marre","date":"24/10/2024","playlist":[1],"client":"M Cassepieds"}]}
+{
+    "soirees": [
+        {
+            "id": 1,
+            "nom": "Soirée d'enfer 2",
+            "date": "23/10/2024",
+            "client": "M.",
+            "playlist": [
+                1,
+                2
+            ]
+        },
+        {
+            "id": 2,
+            "nom": "Journée infernale",
+            "date": "24/10/2024",
+            "playlist": [
+                1,5
+            ],
+            "client": "Mme Trucmuche"
+        },
+        {
+            "id": 3,
+            "nom": "j'en ai marre",
+            "date": "24/10/2024",
+            "playlist": [
+                1,3,4
+            ],
+            "client": "M Cassepieds"
+        }
+    ]
+}

@@ -47,30 +47,18 @@
     </main>
     <script>
 
-        // setReservation(reservations)
-        fetchPlaylists().then((res) => {
-            console.log(res);
-        })
-
-        // fetchPlaylists()
-        // .then(setPlaylists)
-        // .catch(function (error) {
-        //   console.error("Error processing playlists:", error);
-        // });
-        // reservations = fetchReservations();
-        // function setReservation(reservations) {
-        //   let optionsHTML = "";
-        //   reservations.forEach(reservation => {
-        //     optionsHTML += `<option value="${reservation.nom}">${reservation.nom}</option>`;
-        //   });
-        //   $('#reservationItemsDJ').append(optionsHTML);
-        // }
-
-        async function fetchPlaylists() {
+        fetchData('http://localhost:3001/playlists')
+            .then((res) => {
+                setPlaylists(res.playlist)
+            })
+            .catch(function (error) {
+                console.error("Error processing playlists:", error);
+            });
+        async function fetchData(url) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 // Ouvrir une requête GET vers l'URL de votre API
-                xhr.open('GET', 'http://localhost:3001/playlists');
+                xhr.open('GET', url);
 
                 // Fonction à exécuter lorsque l'état de la requête change
                 xhr.onload = function () {
@@ -90,23 +78,27 @@
                 xhr.send()
             });
         }
+        function setPlaylists(playlists) {
+            const playlistItems = $('#playlistItems');
+            playlistItems.empty(); // Clear existing list items before appending
 
-        //   function setPlaylists(playlists) {
-        //     const playlistItems = $('#playlistItems');
-        //     playlistItems.empty(); // Clear existing list items before appending
+            // Loop through each property in the "playlist" object
+            for (const playlistName in playlists) {
+                const playlist = playlists[playlistName]; // Access the playlist object
 
-        //     playlists.forEach(playlistName => { // Loop through playlist names
-        //       const playlist = playlists[playlistName]; // Access playlist object
-        //       if (playlist) { // Check if playlist exists (handle potential structure issues)
-        //         playlist.forEach(song => {
-        //           const listItem = `<li>${song.title} : ${song.author}</li>`;
-        //           playlistItems.append(listItem);
-        //         });
-        //       } else {
-        //         console.warn("Playlist", playlistName, "not found.");
-        //       }
-        //     });
-        //   }
+                if (playlist) { // Check if playlist exists
+                    // Create a heading for the current playlist
+                    const playlistHeading = `<h3>${playlistName}</h3>`;
+                    playlistItems.append(playlistHeading); // Add the heading to the list
+
+                    // Use map to create list items from songs and append them
+                    const songItems = playlist.map(song => `<li>${song.title} - ${song.author}</li>`);
+                    playlistItems.append(...songItems); // Spread operator (*) to append all items
+                } else {
+                    console.warn("Playlist", playlistName, "not found.");
+                }
+            }
+        }
     </script>
 </body>
 

@@ -1,12 +1,38 @@
+version: '3'
 services:
-  api-client:
-    build: .
-    image: dj-marcel-client-server
+  client:
+    build:
+      context: ./djbackclient/            # Chemin vers le dossier du client
+      dockerfile: Dockerfile.client        # Nom par défaut du Dockerfile dans ce dossier
+    image: dj-marcel-client
     ports:
       - "3000:3000"
     volumes:
       - dj-marcel-vol:/usr/src/data/
     command: npm start
 
+  playlist:
+    build:
+      context: ./djbackplaylist/          # Chemin vers le dossier de la playlist
+      dockerfile: Dockerfile.playlist       # Nom par défaut du Dockerfile dans ce dossier
+    image: dj-marcel-playlist
+    ports:
+      - "3001:3001"
+    volumes:
+      - dj-marcel-vol:/usr/src/data/
+    command: npm start
+
+  reservation:
+    build:
+      context: ./djbackreservation/       # Chemin vers le dossier de la reservation
+      dockerfile: Dockerfile.reservation        # Nom par défaut du Dockerfile dans ce dossier
+    image: dj-marcel-reservation
+    ports:
+      - "3002:3002"
+    volumes:
+      - dj-marcel-vol:/usr/src/data/
+    command: npm start
+
 volumes:
   dj-marcel-vol:
+    driver: local
