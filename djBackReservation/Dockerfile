@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install && npm install express && npm install nodemon
+RUN npm install
 
 EXPOSE 3002
 
-CMD ["npm start"]
+CMD ["npm", "start"]
