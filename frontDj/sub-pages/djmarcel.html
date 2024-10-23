@@ -45,7 +45,12 @@
 <script>
 $(document).ready(function(){
     
-    setReservation(reservations)
+    // setReservation(reservations)
+    fetchPlaylists()
+    .then(setPlaylists)
+    .catch(function (error) {
+      console.error("Error processing playlists:", error);
+    });
 })
 reservations = fetchReservations();
 function setReservation(reservations) {
@@ -63,6 +68,40 @@ function fetchReservations(){
     }
   });
 }
+
+function fetchPlaylists() {
+    return $.get("localhost:3001/playlists")
+      .then(function (data, status) {
+        if (data && data.playlist) {
+          // Access playlists directly from "playlist" property
+          return data.playlist;
+        } else {
+          console.error("Error fetching playlists:", status);
+          return []; // Return an empty array in case of error
+        }
+      })
+      .catch(function (error) {
+        console.error("Error fetching playlists:", error);
+        return []; // Return an empty array in case of error
+      });
+  }
+
+  function setPlaylists(playlists) {
+    const playlistItems = $('#playlistItems');
+    playlistItems.empty(); // Clear existing list items before appending
+
+    playlists.forEach(playlistName => { // Loop through playlist names
+      const playlist = playlists[playlistName]; // Access playlist object
+      if (playlist) { // Check if playlist exists (handle potential structure issues)
+        playlist.forEach(song => {
+          const listItem = `<li>${song.title} : ${song.author}</li>`;
+          playlistItems.append(listItem);
+        });
+      } else {
+        console.warn("Playlist", playlistName, "not found.");
+      }
+    });
+  }
 </script>
     <script src="./scripts/dj.js"></script>
 </body>
