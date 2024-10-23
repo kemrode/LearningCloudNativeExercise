@@ -4,10 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install \
-npm install express \
-npm install nodemon
+RUN npm install
 
 EXPOSE 3002
 
-CMD ["nodemon","index.js"]
+CMD ["npm", "start"]
