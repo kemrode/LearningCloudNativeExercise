@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3004
 
 # Commande pour exécuter l'application
-CMD ["npm", "start"]
+CMD ["nodemon", "server.js"]
