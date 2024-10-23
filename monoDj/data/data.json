@@ -1,0 +1,38 @@
+{
+    "playlists":[
+        {
+            "id":"0",
+            "nom":"maPlaylist test",
+            "chansons":[1, 2],
+            "client":0
+        },
+        {
+            "id":"0",
+            "nom":"maPlaylist test",
+            "chansons":[1, 2],
+            "client":0
+        }
+    ],
+    "soirees":[
+        {
+            "id":0,
+            "nom": "",
+            "date":"",
+            "playlist":[0]
+        }
+    ],
+    "clients":[
+        {
+            "id":0,
+            "nom":"",
+            "prenom":""
+        }
+    ],
+    "chansons":[
+        {
+            "id":0,
+            "artiste":"",
+            "titre":""
+        }
+    ]
+}

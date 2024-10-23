@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout clients</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="module" href="../scripts/clients.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Ajouter une chanson</h1>
+    </header>
+    <main>
+        <section>
+            <form id="chansonForm">
+                <label for="artiste">Artiste : </label>
+                <input type="text" id="artiste" required>
+
+                <label for="titre">Titre : </label>
+                <input type="text" id="titre" required>
+
+                <button type="submit">Ajouter à la liste</button>
+            </form>
+        </section>
+    </main>
+    <script>
+    let chansons = []
+    $("#chansonForm").on("submit", function(event){
+        event.preventDefault();
+        chansons.push({"id": Date.now() , "artiste": $('#artiste').val(), "titre": $('#titre').val()})
+        
+    });
+    </script>
+</body>
+</html>
