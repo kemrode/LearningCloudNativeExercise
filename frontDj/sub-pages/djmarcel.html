@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ Marcel - Gestion des Soirées</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
+
 <body>
     <header>
         <h1>Gestion des Soirées</h1>
@@ -27,10 +30,10 @@
 
                 <label for="songName">Nom de la chanson:</label>
                 <input type="text" id="songName" required>
-                
+
                 <label for="artistName">Nom de l'artiste:</label>
                 <input type="text" id="artistName" required>
-                
+
                 <button type="submit">Ajouter à la playlist</button>
             </form>
 
@@ -42,67 +45,69 @@
 
         <a href="index.html">Retour à l'accueil</a>
     </main>
-<script>
-$(document).ready(function(){
-    
-    // setReservation(reservations)
-    fetchPlaylists()
-    .then(setPlaylists)
-    .catch(function (error) {
-      console.error("Error processing playlists:", error);
-    });
-})
-reservations = fetchReservations();
-function setReservation(reservations) {
-  let optionsHTML = "";
-  reservations.forEach(reservation => {
-    optionsHTML += `<option value="${reservation.nom}">${reservation.nom}</option>`;
-  });
-  $('#reservationItemsDJ').append(optionsHTML);
-}
+    <script>
 
-function fetchReservations(){
-    $.get("demo_test.asp", function(data, status){
-    if(data){
-        return data
-    }
-  });
-}
+        // setReservation(reservations)
+        fetchPlaylists().then((res) => {
+            console.log(res);
+        })
 
-function fetchPlaylists() {
-    return $.get("localhost:3001/playlists")
-      .then(function (data, status) {
-        if (data && data.playlist) {
-          // Access playlists directly from "playlist" property
-          return data.playlist;
-        } else {
-          console.error("Error fetching playlists:", status);
-          return []; // Return an empty array in case of error
+        // fetchPlaylists()
+        // .then(setPlaylists)
+        // .catch(function (error) {
+        //   console.error("Error processing playlists:", error);
+        // });
+        // reservations = fetchReservations();
+        // function setReservation(reservations) {
+        //   let optionsHTML = "";
+        //   reservations.forEach(reservation => {
+        //     optionsHTML += `<option value="${reservation.nom}">${reservation.nom}</option>`;
+        //   });
+        //   $('#reservationItemsDJ').append(optionsHTML);
+        // }
+
+        async function fetchPlaylists() {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                // Ouvrir une requête GET vers l'URL de votre API
+                xhr.open('GET', 'http://localhost:3001/playlists');
+
+                // Fonction à exécuter lorsque l'état de la requête change
+                xhr.onload = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // La requête a réussi
+                            const data = JSON.parse(xhr.responseText);
+                            resolve(data)
+                            // Utilisez les données ici
+                        } else {
+                            reject("erreur")
+                            // Une erreur s'est produite
+                            console.error('Erreur lors de la requête :', xhr.status);
+                        }
+                    }
+                };
+                xhr.send()
+            });
         }
-      })
-      .catch(function (error) {
-        console.error("Error fetching playlists:", error);
-        return []; // Return an empty array in case of error
-      });
-  }
 
-  function setPlaylists(playlists) {
-    const playlistItems = $('#playlistItems');
-    playlistItems.empty(); // Clear existing list items before appending
+        //   function setPlaylists(playlists) {
+        //     const playlistItems = $('#playlistItems');
+        //     playlistItems.empty(); // Clear existing list items before appending
 
-    playlists.forEach(playlistName => { // Loop through playlist names
-      const playlist = playlists[playlistName]; // Access playlist object
-      if (playlist) { // Check if playlist exists (handle potential structure issues)
-        playlist.forEach(song => {
-          const listItem = `<li>${song.title} : ${song.author}</li>`;
-          playlistItems.append(listItem);
-        });
-      } else {
-        console.warn("Playlist", playlistName, "not found.");
-      }
-    });
-  }
-</script>
-    <script src="./scripts/dj.js"></script>
+        //     playlists.forEach(playlistName => { // Loop through playlist names
+        //       const playlist = playlists[playlistName]; // Access playlist object
+        //       if (playlist) { // Check if playlist exists (handle potential structure issues)
+        //         playlist.forEach(song => {
+        //           const listItem = `<li>${song.title} : ${song.author}</li>`;
+        //           playlistItems.append(listItem);
+        //         });
+        //       } else {
+        //         console.warn("Playlist", playlistName, "not found.");
+        //       }
+        //     });
+        //   }
+    </script>
 </body>
+
 </html>
