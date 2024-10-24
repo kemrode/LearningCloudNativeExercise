@@ -26,8 +26,9 @@
             <form id="playlistForm">
                 <label for="soireePlaylist">Playlist de la soirée : </label>
                 <p id="soireePlaylist"></p>
+                <label for="playlistList">Modifier la playlist de la soirée : </label>
                 <select id="playlistList"></select>
-                <button type="submit">Ajouter à la playlist</button>
+                <button type="submit">Modifier</button>
             </form>
 
             <div id="playlistSongs">
@@ -108,10 +109,11 @@
         function getBookingById(id) {
             fetchData(`http://localhost:3002/booking/${id}`)
                 .then((res) => {
-                    $('#soireePlaylist').empty().append(res.playlist.id)
+                    $('#soireePlaylist').empty().append(id)
+                    $('#playlistList').empty()
                     let newReservationsList = supprimerObjetParId(reservations, res.playlist.id)
                     newReservationsList.forEach(reservation => {
-                       let optionReservation = `<option value=${reservation.playlist.id}>${reservation.playlist.id}</option>`;
+                       let optionReservation = `<option value=${reservation.playlist}>${reservation.playlist}</option>`;
                        $('#playlistList').append(optionReservation)
                     })
                 })
@@ -156,28 +158,36 @@ function supprimerObjetParId(tableauObjets, idASupprimer) {
         $("#reservationItemsDJ").on("change", function (event) {
             event.preventDefault();
             getBookingById(this.value)
-            $('')
-            // const clientName = $('#clientName').val();
-            // const eventType = $('#eventType').val();
-            // const eventDate = $('#eventDate').val(); // Format yyyy-mm-dd
-            // const playlistId = $('#playlistId').val();
-            // // Convertir la date au format dd/mm/yyyy
-            // const formattedDate = eventDate.split('-').reverse().join('/');
-
-            // // Nouvelle réservation
-            // const newReservation = {
-            //     id: reservations.length + 1, // ID auto-incrémenté
-            //     nom: eventType,              // Nom de la soirée (type d'événement)
-            //     date: formattedDate,         // Date formatée
-            //     playlist: [playlistId],                // Playlist vide
-            //     client: clientName           // Nom du client
-            // };
-
-            // // Envoi de la nouvelle réservation au backend
-            // sendData('http://localhost:3002/booking', newReservation);
-            // // Mise à jour de la liste des réservations locales et affichage
-            // getBooking()
         });
+        $("#playlistForm").on("submit", function (event) {
+            event.preventDefault();
+           const idReservation = $('#reservationItemsDJ').find(":selected").val();
+           const playlistId = $('#playlistList').val();
+           let newPlaylistForReservation = {
+            'id': idReservation,
+            'playlist' : playlistId
+           }
+           sendData(`http://localhost:3002/booking/${id}`,newPlaylistForReservation)
+
+        });
+
+        function sendData(url, data) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log("Réservation envoyée avec succès :", xhr.responseText);
+                    } else {
+                        console.error("Erreur lors de l'envoi de la réservation :", xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send(JSON.stringify(data));
+        }
     </script>
 </body>
 

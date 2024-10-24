@@ -21,11 +21,11 @@ services:
   api-playlist:
     build: ./djBackPlaylist
     ports:
-      - "2000-3001:3001"
+      - "3001:3001"
     command: npm start
     networks:
       - dj-marcel
-    scale: 27
+    scale: 1
 
   api-reservation:
     build: ./djBackReservation
