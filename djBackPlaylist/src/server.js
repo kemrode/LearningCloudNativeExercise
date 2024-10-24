@@ -20,6 +20,8 @@ app.use(function (request, response, next) {
 app.use(express.json());
 app.use('/playlists', playlistRoutes);
 
+const consul = require('consul');
+
 app.get('/', (req, res) => {
   res.sendFile(patch.join(__dirname, 'public', 'index.html'));
 });
