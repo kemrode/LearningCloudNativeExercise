@@ -51,12 +51,13 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     try {
         const playLists = readPlaylistsFromFile();
-        const playlist = playLists.find(c => c.id === req.params.id);
+        const playlist = playLists.playlists.find(c => c.id === parseInt(req.params.id));
         if (!playlist) {
             return res.status(404).send();
         }
-        res.status(200).send(client);
+        res.status(200).json(playlist);
     } catch (error) {
+        console.log(`L'erreur remontée est: ${error}`)
         res.status(500).send(error);
     }
 });
