@@ -16,6 +16,7 @@ app.use(cors());
 const bookJson = "booking.json";
 const bookingJson = require(`./${bookJson}`);
 
+
 app.get("/booking", (req, res) => {
     try {
         res.status(200).json(bookingJson);
