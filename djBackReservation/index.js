@@ -30,20 +30,26 @@ app.get("/booking/:id", (req, res) => {
     }
 });
 
+// Endpoint POST pour ajouter une réservation
 app.post("/booking", express.json(), (req, res) => {
     try {
-        bookingJson.soirees.push(req.body)
-        fs.writeFile(bookJson, JSON.stringify(bookingJson), (err) => {
+        // Pousser la nouvelle réservation dans le tableau "soirees"
+        bookingJson.soirees.push(req.body);
+
+        // Écrire dans le fichier booking.json
+        fs.writeFile(bookJson, JSON.stringify(bookingJson, null, 2), (err) => {
             if (err) {
-                console.log(`L'écriture dans le JSON a échoué, sa mère la teup: ${err}`);
+                console.error(`Erreur d'écriture dans le JSON : ${err}`);
                 throw err;
             }
-            console.log("L'écriture dans le JSON s'est bien passé");
-        })
+            console.log("Réservation ajoutée avec succès dans le JSON");
+        });
+
+        // Retourner les données à jour
         res.status(200).json(bookingJson);
     } catch (error) {
-        res.status(400);
-        console.log(error);
+        console.error("Erreur lors de l'ajout de la réservation : ", error);
+        res.status(400).send('Erreur lors de l\'ajout de la réservation');
     }
 });
 

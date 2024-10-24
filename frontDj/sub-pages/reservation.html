@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,46 +9,226 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="module" href="../scripts/clients.js"></script>
 </head>
+
 <body>
     <header>
-        <h1>Réservation de Soirée</h1>
+        <h1 style="color:white;">Réservation de Soirée</h1>
     </header>
 
     <main>
         <section id="reservations">
+            <div id="reservationsList">
+                <h2>Réservations à venir</h2>
+                <ul id="reservationItems"></ul>
+            </div>
             <h2>Réserver une soirée</h2>
             <form id="reservationForm">
                 <label for="clientName">Nom du client:</label>
                 <input type="text" id="clientName" required>
-                
-                <label for="eventDate">Date de la soirée:</label>
-                <input type="date" id="eventDate" required>
-                
                 <label for="eventType">Type de soirée:</label>
                 <select id="eventType">
-                    <option value="Anniversaire">Anniversaire</option>
-                    <option value="Mariage">Mariage</option>
-                    <option value="Entreprise">Soirée d'entreprise</option>
                 </select>
-                
+                <label for="eventDate">Date de la soirée:</label>
+                <input type="date" id="eventDate" disabled>
+
+
                 <button type="submit">Réserver</button>
             </form>
-            <div id="reservationsList">
-                <h3>Réservations à venir</h3>
-                <ul id="reservationItems"></ul>
-            </div>
         </section>
 
-        <a href="index.html">Retour à l'accueil</a>
+        <a href="../index.html">Retour à l'accueil</a>
     </main>
-<script>
-    let reservations = []
-        $("#reservationForm").on("submit", function(event){
-        event.preventDefault();
-        reservations.push({"nom": $('#clientName').val(), "prenom": $('#prenom').val(), "event" : $('#eventType').find(":selected").val()})
-        
-    });
-</script>
+    <script>
+        let reservations = [];
+        const playlists = {
+            "playlists": [
+                {
+                    "id": 1,
+                    "title": "Playlist 1",
+                    "songs": [
+                        { "id": 1, "title": "title1", "author": "author1" },
+                        { "id": 2, "title": "title2", "author": "author2" }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "title": "Playlist 2",
+                    "songs": [
+                        { "id": 3, "title": "title3", "author": "author3" },
+                        { "id": 4, "title": "title4", "author": "author4" }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "title": "Playlist 3",
+                    "songs": [
+                        { "id": 5, "title": "title5", "author": "author5" },
+                        { "id": 6, "title": "title6", "author": "author6" }
+                    ]
+                }
+            ]
+        };
+
+        $("#reservationForm").on("submit", function (event) {
+            event.preventDefault();
+
+            const clientName = $('#clientName').val();
+            const eventType = $('#eventType').val();
+            const eventDate = $('#eventDate').val(); // Format yyyy-mm-dd
+
+            // Convertir la date au format dd/mm/yyyy
+            const formattedDate = eventDate.split('-').reverse().join('/');
+
+            // Nouvelle réservation
+            const newReservation = {
+                id: reservations.length + 1, // ID auto-incrémenté
+                nom: eventType,              // Nom de la soirée (type d'événement)
+                date: formattedDate,         // Date formatée
+                playlist: [],                // Playlist vide
+                client: clientName           // Nom du client
+            };
+
+            // Envoi de la nouvelle réservation au backend
+            sendData('http://localhost:3002/booking', newReservation);
+
+            // Mise à jour de la liste des réservations locales et affichage
+            reservations.push(newReservation);
+            setReservations(reservations);
+            initializeForm(reservations);
+        });
+
+        fetchData('http://localhost:3002/booking')
+            .then((res) => {
+                console.log(JSON.stringify(res.soirees, null, 1));
+                reservations = res.soirees;
+                setReservations(res.soirees);
+                initializeForm(res.soirees);
+            })
+            .catch(function (error) {
+                console.error("Error processing datas:", error);
+            });
+
+        async function fetchData(url) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                // Ouvrir une requête GET vers l'URL de votre API
+                xhr.open('GET', url);
+
+                // Fonction à exécuter lorsque l'état de la requête change
+                xhr.onload = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // La requête a réussi
+                            const data = JSON.parse(xhr.responseText);
+                            resolve(data);
+                        } else {
+                            reject("erreur");
+                            // Une erreur s'est produite
+                            console.error('Erreur lors de la requête :', xhr.status);
+                        }
+                    }
+                };
+                xhr.send();
+            });
+        }
+
+        function sendData(url, data) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log("Réservation envoyée avec succès :", xhr.responseText);
+                    } else {
+                        console.error("Erreur lors de l'envoi de la réservation :", xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send(JSON.stringify(data));
+        }
+
+        function setReservations(reservations) {
+            const reservationItems = $('#reservationItems');
+            reservationItems.empty(); // Vider la liste avant d'ajouter les nouvelles données
+
+            reservations.forEach(reservation => {
+                const reservationHeading = `<h3>${reservation.nom} - ${reservation.date}</h3>`;
+                reservationItems.append(reservationHeading);
+
+                // Afficher la playlist
+                if (reservation.playlist && reservation.playlist.length > 0) {
+                    reservationItems.append(`<p><strong>Playlist :</strong></p>`);
+                    const playlistItems = $('<ul></ul>');
+                    
+                    // Afficher chaque playlist associée par ID
+                    reservation.playlist.forEach(playlistId => {
+                        const playlist = playlists.playlists.find(pl => pl.id === playlistId); // Trouver la playlist par ID
+                        if (playlist) {
+                            playlistItems.append(`<li><strong>${playlist.title}</strong> (ID: ${playlist.id})</li>`);
+                            
+                            // Afficher les chansons de la playlist
+                            const songItems = $('<ul></ul>');
+                            playlist.songs.forEach(song => {
+                                songItems.append(`<li>${song.title} - ${song.author} (ID: ${song.id})</li>`);
+                            });
+                            playlistItems.append(songItems);
+                        }
+                    });
+
+                    reservationItems.append(playlistItems);
+                } else {
+                    reservationItems.append(`<p>Pas de playlist disponible.</p>`);
+                }
+
+                // Afficher les clients
+                if (reservation.client) {
+                    reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${reservation.client}</li></ul>`);
+                }
+            });
+        }
+
+        function initializeForm(reservations) {
+            const eventTypeSelect = $('#eventType'); // Le champ "Type de soirée"
+            const eventDateInput = $('#eventDate');  // Le champ "Date de la soirée"
+
+            // Vider les options du champ "Type de soirée" avant d'ajouter de nouvelles options
+            eventTypeSelect.empty();
+
+            // Ajouter les options dynamiques à partir du tableau des réservations
+            reservations.forEach(reservation => {
+                const option = `<option value="${reservation.nom}">${reservation.nom}</option>`;
+                eventTypeSelect.append(option);
+            });
+
+            // Gérer le changement de la sélection de soirée pour mettre à jour la date
+            eventTypeSelect.on('change', function () {
+                const selectedEvent = $(this).val();  // Récupérer le nom de la soirée sélectionnée
+                const selectedReservation = reservations.find(res => res.nom === selectedEvent);  // Trouver la réservation correspondante
+
+                if (selectedReservation) {
+                    // Mettre à jour le champ "Date de la soirée" avec la date correspondante
+                    eventDateInput.val(formatDate(selectedReservation.date));
+                }
+            });
+
+            // Initialiser la première date en fonction de la première soirée sélectionnée
+            if (reservations.length > 0) {
+                const firstReservation = reservations[0];
+                eventTypeSelect.val(firstReservation.nom);  // Sélectionner la première soirée par défaut
+                eventDateInput.val(formatDate(firstReservation.date));  // Mettre à jour la date correspondante
+            }
+        }
+
+        // Fonction pour formater la date (du format "dd/mm/yyyy" au format "yyyy-mm-dd" attendu par l'input date)
+        function formatDate(dateString) {
+            const [day, month, year] = dateString.split('/');
+            return `${year}-${month}-${day}`;
+        }
+    </script>
     <script src="../scripts/clients.js"></script>
 </body>
+
 </html>
