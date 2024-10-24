@@ -2,6 +2,11 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const cors = require('cors');
+const internal = require('stream');
+let fetch;
+(async () => {
+    fetch = (await import('node-fetch')).default;
+})();
 
 //CFG PORT
 const PORT = process.env.PORT || 3002;
@@ -31,11 +36,14 @@ app.get("/booking/:id", (req, res) => {
 });
 
 // Endpoint POST pour ajouter une réservation
-app.post("/booking", express.json(), (req, res) => {
+app.post("/booking", express.json(), async (req, res) => {
     try {
+        const playlist = await GetPlaylist(req.body.playlist);
         // Pousser la nouvelle réservation dans le tableau "soirees"
-        bookingJson.soirees.push(req.body);
-
+        const nouvelleSoiree = req.body;
+        nouvelleSoiree.playlist = playlist;
+        console.log(`Notre nouvelle soirée est: ${nouvelleSoiree}`);
+        bookingJson.soirees.push(nouvelleSoiree);
         // Écrire dans le fichier booking.json
         fs.writeFile(bookJson, JSON.stringify(bookingJson, null, 2), (err) => {
             if (err) {
@@ -91,6 +99,21 @@ app.patch('/booking/:id', express.json(), (req, res) => {
 app.delete("/booking/:id", (req, res) => {
 
 });
+
+async function GetPlaylist(id) {
+    return await fetch(`http://localhost:3001/playlists/${id}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then((res) => {
+        return res.json();
+    }).catch((error) => {
+        console.log(`Une erreur est survenue lors de la récupération de la putain d'info de merde: ${error}`);
+        return 0;
+    })
+}
 
 app.listen(PORT, () => {
     console.log("serveur à l'écoute");
