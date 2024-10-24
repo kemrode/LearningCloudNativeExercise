@@ -101,16 +101,17 @@ app.delete("/booking/:id", (req, res) => {
 });
 
 async function GetPlaylist(id) {
-    return await fetch(`http://localhost:3001/playlists/${id}`, {
+    return await fetch(`http://api-playlist:3001/playlists/${id}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
     }).then((res) => {
+        console.log(JSON.stringify(res))
         return res.json();
     }).catch((error) => {
-        console.log(`Une erreur est survenue lors de la récupération de la putain d'info de merde: ${error}`);
+        console.log(`Une erreur est survenue: ${error}`);
         return 0;
     })
 }
