@@ -24,9 +24,19 @@ const consul = require('consul');
 const consulName = "api-playlist";
 
 await consul.Agent.Service.register({ name: consulName, id: 123456789, address: "http://api-playlist", port: 3001 });
-console.log("Salut")
+
 app.get('/', (req, res) => {
   res.sendFile(patch.join(__dirname, 'public', 'index.html'));
+});
+
+//check if server is running
+app.get('/check', (req, res) => {
+  try {
+    res.status(200).json({ status: '200' });
+
+  } catch (error) {
+    res.status(500).json({ status: '500' });
+  }
 });
 
 app.listen(PORT, () => {
