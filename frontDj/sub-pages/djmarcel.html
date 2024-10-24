@@ -16,23 +16,16 @@
 
     <main>
         <section id="soirees">
-            <h2>Liste des soirées réservées</h2>
-            <div id="reservationsListDJ">
-                <select id="reservationItemsDJ"></ul>
-            </div>
+            <label for="reservationItemsDJ">Type de soirée:</label>
+            <select id="reservationItemsDJ">
+            </select>
         </section>
 
         <section id="playlists">
             <h2>Ajouter une chanson à la playlist pour une soirée</h2>
             <form id="playlistForm">
                 <label for="eventDate">Date de la soirée:</label>
-                <input type="date" id="eventDate" required>
-
-                <label for="songName">Nom de la chanson:</label>
-                <input type="text" id="songName" required>
-
-                <label for="artistName">Nom de l'artiste:</label>
-                <input type="text" id="artistName" required>
+                <input type="date" id="eventDate" required disabled>
 
                 <button type="submit">Ajouter à la playlist</button>
             </form>
@@ -46,7 +39,8 @@
         <a href="index.html">Retour à l'accueil</a>
     </main>
     <script>
-
+        let reservations = []
+        getBooking();
         fetchData('http://localhost:3001/playlists')
             .then((res) => {
                 setPlaylists(res.playlist)
@@ -99,6 +93,45 @@
                 }
             }
         }
+        function getBooking(){
+            fetchData('http://localhost:3002/booking')
+            .then((res) => {
+                reservations = res.soirees;
+                setReservations(res.soirees);
+                // initializeForm(res.soirees);
+            })
+            .catch(function (error) {
+                console.error("Error processing datas:", error);
+            });
+        }
+
+        function setReservations(reservations) {
+            const reservationItems = $('#reservationItemsDJ');
+            reservationItems.empty(); // Vider la liste avant d'ajouter les nouvelles données
+            console.log(JSON.stringify(reservations, null, 1))
+            supprimerDoublonsEtCreerOptions(reservations, reservationItems);
+        }
+
+        function supprimerDoublonsEtCreerOptions(reservations, reservationItems) {
+  // Grouper les réservations par nom
+  const reservationsParNom = reservations.reduce((acc, reservation) => {
+    acc[reservation.nom] = acc[reservation.nom] || [];
+    acc[reservation.nom].push(reservation);
+    return acc;
+  }, {});
+
+  // Créer les options en prenant la dernière réservation de chaque groupe
+  Object.values(reservationsParNom).forEach(groupe => {
+    const derniereReservation = groupe[groupe.length - 1];
+    const optionReservation = `<option value="${derniereReservation.id}">${derniereReservation.nom} - ${derniereReservation.date}</option>`;
+    reservationItems.append(optionReservation);
+
+    // Afficher le client si présent
+    if (derniereReservation.client) {
+      reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${derniereReservation.client}</li></ul>`);
+    }
+  });
+}
     </script>
 </body>
 

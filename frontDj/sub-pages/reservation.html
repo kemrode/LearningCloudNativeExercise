@@ -28,8 +28,10 @@
                 <label for="eventType">Type de soirée:</label>
                 <select id="eventType">
                 </select>
+                <label for="playlistId">Playlist:</label>
+                <select id="playlistId" required>
                 <label for="eventDate">Date de la soirée:</label>
-                <input type="date" id="eventDate" disabled>
+                <input type="date" id="eventDate" required>
 
 
                 <button type="submit">Réserver</button>
@@ -40,6 +42,8 @@
     </main>
     <script>
         let reservations = [];
+        getBooking();
+        getPlaylistId()
         const playlists = {
             "playlists": [
                 {
@@ -75,7 +79,7 @@
             const clientName = $('#clientName').val();
             const eventType = $('#eventType').val();
             const eventDate = $('#eventDate').val(); // Format yyyy-mm-dd
-
+            const playlistId = $('#playlistId').val();
             // Convertir la date au format dd/mm/yyyy
             const formattedDate = eventDate.split('-').reverse().join('/');
 
@@ -84,22 +88,18 @@
                 id: reservations.length + 1, // ID auto-incrémenté
                 nom: eventType,              // Nom de la soirée (type d'événement)
                 date: formattedDate,         // Date formatée
-                playlist: [],                // Playlist vide
+                playlist: [playlistId],                // Playlist vide
                 client: clientName           // Nom du client
             };
 
             // Envoi de la nouvelle réservation au backend
             sendData('http://localhost:3002/booking', newReservation);
-
             // Mise à jour de la liste des réservations locales et affichage
-            reservations.push(newReservation);
-            setReservations(reservations);
-            initializeForm(reservations);
+            getBooking()
         });
-
-        fetchData('http://localhost:3002/booking')
+        function getBooking(){
+            fetchData('http://localhost:3002/booking')
             .then((res) => {
-                console.log(JSON.stringify(res.soirees, null, 1));
                 reservations = res.soirees;
                 setReservations(res.soirees);
                 initializeForm(res.soirees);
@@ -107,7 +107,21 @@
             .catch(function (error) {
                 console.error("Error processing datas:", error);
             });
-
+        }
+        function getPlaylistId(){
+            fetchData('http://localhost:3001/playlists')
+            .then((res) => {
+                const playListOption = $('#playlistId');
+                res.playlists.forEach(playlist => {
+                        if (playlist) {
+                            playListOption.append(`<option value="${playlist.id}">${playlist.id}</option>`);
+                        }
+                    });
+            })
+            .catch(function (error) {
+                console.error("Error processing datas:", error);
+            });
+        }
         async function fetchData(url) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
@@ -157,28 +171,10 @@
             reservations.forEach(reservation => {
                 const reservationHeading = `<h3>${reservation.nom} - ${reservation.date}</h3>`;
                 reservationItems.append(reservationHeading);
-
                 // Afficher la playlist
                 if (reservation.playlist && reservation.playlist.length > 0) {
-                    reservationItems.append(`<p><strong>Playlist :</strong></p>`);
-                    const playlistItems = $('<ul></ul>');
-                    
-                    // Afficher chaque playlist associée par ID
-                    reservation.playlist.forEach(playlistId => {
-                        const playlist = playlists.playlists.find(pl => pl.id === playlistId); // Trouver la playlist par ID
-                        if (playlist) {
-                            playlistItems.append(`<li><strong>${playlist.title}</strong> (ID: ${playlist.id})</li>`);
-                            
-                            // Afficher les chansons de la playlist
-                            const songItems = $('<ul></ul>');
-                            playlist.songs.forEach(song => {
-                                songItems.append(`<li>${song.title} - ${song.author} (ID: ${song.id})</li>`);
-                            });
-                            playlistItems.append(songItems);
-                        }
-                    });
 
-                    reservationItems.append(playlistItems);
+                    reservationItems.append(`<li><strong>Playlist : </strong>${reservation.id}</li>`);
                 } else {
                     reservationItems.append(`<p>Pas de playlist disponible.</p>`);
                 }
@@ -189,37 +185,34 @@
                 }
             });
         }
+        function supprimerDoublonsEtCreerOptions(reservations, eventTypeSelect) {
+  // Créer un ensemble (Set) pour stocker les noms de réservation uniques
+  const nomsUniques = new Set();
 
+  // Parcourir les réservations et ajouter les noms uniques à l'ensemble
+  reservations.forEach(reservation => {
+    nomsUniques.add(reservation.nom);
+  });
+
+  // Convertir l'ensemble en tableau pour pouvoir itérer dessus
+  const nomsUniquesArray = Array.from(nomsUniques);
+
+  // Vider le select pour éviter d'ajouter des doublons
+  eventTypeSelect.innerHTML = '';
+
+  // Créer les options avec les noms uniques
+  nomsUniquesArray.forEach(nom => {
+    const option = `<option value="${nom}">${nom}</option>`;
+    eventTypeSelect.append(option);
+  });
+}
         function initializeForm(reservations) {
             const eventTypeSelect = $('#eventType'); // Le champ "Type de soirée"
             const eventDateInput = $('#eventDate');  // Le champ "Date de la soirée"
 
             // Vider les options du champ "Type de soirée" avant d'ajouter de nouvelles options
             eventTypeSelect.empty();
-
-            // Ajouter les options dynamiques à partir du tableau des réservations
-            reservations.forEach(reservation => {
-                const option = `<option value="${reservation.nom}">${reservation.nom}</option>`;
-                eventTypeSelect.append(option);
-            });
-
-            // Gérer le changement de la sélection de soirée pour mettre à jour la date
-            eventTypeSelect.on('change', function () {
-                const selectedEvent = $(this).val();  // Récupérer le nom de la soirée sélectionnée
-                const selectedReservation = reservations.find(res => res.nom === selectedEvent);  // Trouver la réservation correspondante
-
-                if (selectedReservation) {
-                    // Mettre à jour le champ "Date de la soirée" avec la date correspondante
-                    eventDateInput.val(formatDate(selectedReservation.date));
-                }
-            });
-
-            // Initialiser la première date en fonction de la première soirée sélectionnée
-            if (reservations.length > 0) {
-                const firstReservation = reservations[0];
-                eventTypeSelect.val(firstReservation.nom);  // Sélectionner la première soirée par défaut
-                eventDateInput.val(formatDate(firstReservation.date));  // Mettre à jour la date correspondante
-            }
+            supprimerDoublonsEtCreerOptions(reservations,eventTypeSelect)
         }
 
         // Fonction pour formater la date (du format "dd/mm/yyyy" au format "yyyy-mm-dd" attendu par l'input date)
