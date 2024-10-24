@@ -22,11 +22,11 @@
         </section>
 
         <section id="playlists">
-            <h2>Ajouter une chanson à la playlist pour une soirée</h2>
+            <h2>Modifier la playlist pour la soirée</h2>
             <form id="playlistForm">
-                <label for="eventDate">Date de la soirée:</label>
-                <input type="date" id="eventDate" required disabled>
-
+                <label for="soireePlaylist">Playlist de la soirée : </label>
+                <p id="soireePlaylist"></p>
+                <select id="playlistList"></select>
                 <button type="submit">Ajouter à la playlist</button>
             </form>
 
@@ -93,45 +93,91 @@
                 }
             }
         }
-        function getBooking(){
+        function getBooking() {
             fetchData('http://localhost:3002/booking')
-            .then((res) => {
-                reservations = res.soirees;
-                setReservations(res.soirees);
-                // initializeForm(res.soirees);
-            })
-            .catch(function (error) {
-                console.error("Error processing datas:", error);
-            });
+                .then((res) => {
+                    reservations = res.soirees;
+                    setReservations(res.soirees);
+                    // initializeForm(res.soirees);
+                })
+                .catch(function (error) {
+                    console.error("Error processing datas:", error);
+                });
         }
+
+        function getBookingById(id) {
+            fetchData(`http://localhost:3002/booking/${id}`)
+                .then((res) => {
+                    $('#soireePlaylist').empty().append(res.playlist.id)
+                    let newReservationsList = supprimerObjetParId(reservations, res.playlist.id)
+                    newReservationsList.forEach(reservation => {
+                       let optionReservation = `<option value=${reservation.playlist.id}>${reservation.playlist.id}</option>`;
+                       $('#playlistList').append(optionReservation)
+                    })
+                })
+                .catch(function (error) {
+                    console.error("Error processing datas:", error);
+                });
+        }
+function supprimerObjetParId(tableauObjets, idASupprimer) {
+  // Filtrer le tableau pour ne garder que les objets dont l'ID est différent de celui à supprimer
+  const nouveauTableau = tableauObjets.filter(objet => objet.id !== idASupprimer);
+
+  return nouveauTableau;
+}
 
         function setReservations(reservations) {
             const reservationItems = $('#reservationItemsDJ');
             reservationItems.empty(); // Vider la liste avant d'ajouter les nouvelles données
-            console.log(JSON.stringify(reservations, null, 1))
             supprimerDoublonsEtCreerOptions(reservations, reservationItems);
         }
 
         function supprimerDoublonsEtCreerOptions(reservations, reservationItems) {
-  // Grouper les réservations par nom
-  const reservationsParNom = reservations.reduce((acc, reservation) => {
-    acc[reservation.nom] = acc[reservation.nom] || [];
-    acc[reservation.nom].push(reservation);
-    return acc;
-  }, {});
+            // Grouper les réservations par nom
+            const reservationsParNom = reservations.reduce((acc, reservation) => {
+                acc[reservation.nom] = acc[reservation.nom] || [];
+                acc[reservation.nom].push(reservation);
+                return acc;
+            }, {});
 
-  // Créer les options en prenant la dernière réservation de chaque groupe
-  Object.values(reservationsParNom).forEach(groupe => {
-    const derniereReservation = groupe[groupe.length - 1];
-    const optionReservation = `<option value="${derniereReservation.id}">${derniereReservation.nom} - ${derniereReservation.date}</option>`;
-    reservationItems.append(optionReservation);
+            // Créer les options en prenant la dernière réservation de chaque groupe
+            Object.values(reservationsParNom).forEach(groupe => {
+                const derniereReservation = groupe[groupe.length - 1];
+                const optionReservation = `<option value="${derniereReservation.id}">${derniereReservation.nom} - ${derniereReservation.date}</option>`;
+                reservationItems.append(optionReservation);
 
-    // Afficher le client si présent
-    if (derniereReservation.client) {
-      reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${derniereReservation.client}</li></ul>`);
-    }
-  });
-}
+                // Afficher le client si présent
+                if (derniereReservation.client) {
+                    reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${derniereReservation.client}</li></ul>`);
+                }
+            });
+        }
+
+        $("#reservationItemsDJ").on("change", function (event) {
+            event.preventDefault();
+            getBookingById(this.value)
+            $('')
+            // const clientName = $('#clientName').val();
+            // const eventType = $('#eventType').val();
+            // const eventDate = $('#eventDate').val(); // Format yyyy-mm-dd
+            // const playlistId = $('#playlistId').val();
+            // // Convertir la date au format dd/mm/yyyy
+            // const formattedDate = eventDate.split('-').reverse().join('/');
+
+            // // Nouvelle réservation
+            // const newReservation = {
+            //     id: reservations.length + 1, // ID auto-incrémenté
+            //     nom: eventType,              // Nom de la soirée (type d'événement)
+            //     date: formattedDate,         // Date formatée
+            //     playlist: [playlistId],                // Playlist vide
+            //     client: clientName           // Nom du client
+            // };
+
+            // // Envoi de la nouvelle réservation au backend
+            // sendData('http://localhost:3002/booking', newReservation);
+            // // Mise à jour de la liste des réservations locales et affichage
+            // getBooking()
+        });
     </script>
 </body>
 
