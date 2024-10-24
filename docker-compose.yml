@@ -2,6 +2,16 @@ version: '3'
 
 services:
 
+  consul:
+    image: consul
+    container_name: consul-server
+    ports:
+      - "8500:8500"    # Porta da interface web do Consul
+      - "8600:8600/udp" # DNS Service Discovery
+    command: "agent -server -bootstrap -ui -client=0.0.0.0"
+    networks:
+      - dj-marcel
+
   frontdj:
     build: ./frontDj
     ports:
@@ -9,6 +19,15 @@ services:
     command: npm start
     networks:
       - dj-marcel
+    environment:
+      - CONSUL_HTTP_ADDR=consul-server:8500
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3004 || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "com.consul.register=true"
 
   api-client:
     build: ./djBackClient
@@ -17,6 +36,15 @@ services:
     command: npm start
     networks:
       - dj-marcel
+    environment:
+      - CONSUL_HTTP_ADDR=consul-server:8500
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "com.consul.register=true"
 
   api-playlist:
     build: ./djBackPlaylist
@@ -25,6 +53,15 @@ services:
     command: npm start
     networks:
       - dj-marcel
+    environment:
+      - CONSUL_HTTP_ADDR=consul-server:8500
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3001 || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "com.consul.register=true"
 
   api-reservation:
     build: ./djBackReservation
@@ -33,6 +70,15 @@ services:
     command: npm start
     networks:
       - dj-marcel
+    environment:
+      - CONSUL_HTTP_ADDR=consul-server:8500
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3002 || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 5s
+    labels:
+      - "com.consul.register=true"
 
 networks:
   dj-marcel:
