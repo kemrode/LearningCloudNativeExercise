@@ -22,12 +22,13 @@
         </section>
 
         <section id="playlists">
-            <h2>Ajouter une chanson à la playlist pour une soirée</h2>
+            <h2>Modifier la playlist pour la soirée</h2>
             <form id="playlistForm">
-                <label for="eventDate">Date de la soirée:</label>
-                <input type="date" id="eventDate" required disabled>
-
-                <button type="submit">Ajouter à la playlist</button>
+                <label for="soireePlaylist">Playlist de la soirée : </label>
+                <p id="soireePlaylist"></p>
+                <label for="playlistList">Modifier la playlist de la soirée : </label>
+                <select id="playlistList"></select>
+                <button type="submit">Modifier</button>
             </form>
 
             <div id="playlistSongs">
@@ -93,45 +94,100 @@
                 }
             }
         }
-        function getBooking(){
+        function getBooking() {
             fetchData('http://localhost:3002/booking')
-            .then((res) => {
-                reservations = res.soirees;
-                setReservations(res.soirees);
-                // initializeForm(res.soirees);
-            })
-            .catch(function (error) {
-                console.error("Error processing datas:", error);
-            });
+                .then((res) => {
+                    reservations = res.soirees;
+                    setReservations(res.soirees);
+                    // initializeForm(res.soirees);
+                })
+                .catch(function (error) {
+                    console.error("Error processing datas:", error);
+                });
         }
+
+        function getBookingById(id) {
+            fetchData(`http://localhost:3002/booking/${id}`)
+                .then((res) => {
+                    $('#soireePlaylist').empty().append(id)
+                    $('#playlistList').empty()
+                    let newReservationsList = supprimerObjetParId(reservations, res.playlist.id)
+                    newReservationsList.forEach(reservation => {
+                       let optionReservation = `<option value=${reservation.playlist}>${reservation.playlist}</option>`;
+                       $('#playlistList').append(optionReservation)
+                    })
+                })
+                .catch(function (error) {
+                    console.error("Error processing datas:", error);
+                });
+        }
+function supprimerObjetParId(tableauObjets, idASupprimer) {
+  // Filtrer le tableau pour ne garder que les objets dont l'ID est différent de celui à supprimer
+  const nouveauTableau = tableauObjets.filter(objet => objet.id !== idASupprimer);
+
+  return nouveauTableau;
+}
 
         function setReservations(reservations) {
             const reservationItems = $('#reservationItemsDJ');
             reservationItems.empty(); // Vider la liste avant d'ajouter les nouvelles données
-            console.log(JSON.stringify(reservations, null, 1))
             supprimerDoublonsEtCreerOptions(reservations, reservationItems);
         }
 
         function supprimerDoublonsEtCreerOptions(reservations, reservationItems) {
-  // Grouper les réservations par nom
-  const reservationsParNom = reservations.reduce((acc, reservation) => {
-    acc[reservation.nom] = acc[reservation.nom] || [];
-    acc[reservation.nom].push(reservation);
-    return acc;
-  }, {});
+            // Grouper les réservations par nom
+            const reservationsParNom = reservations.reduce((acc, reservation) => {
+                acc[reservation.nom] = acc[reservation.nom] || [];
+                acc[reservation.nom].push(reservation);
+                return acc;
+            }, {});
 
-  // Créer les options en prenant la dernière réservation de chaque groupe
-  Object.values(reservationsParNom).forEach(groupe => {
-    const derniereReservation = groupe[groupe.length - 1];
-    const optionReservation = `<option value="${derniereReservation.id}">${derniereReservation.nom} - ${derniereReservation.date}</option>`;
-    reservationItems.append(optionReservation);
+            // Créer les options en prenant la dernière réservation de chaque groupe
+            Object.values(reservationsParNom).forEach(groupe => {
+                const derniereReservation = groupe[groupe.length - 1];
+                const optionReservation = `<option value="${derniereReservation.id}">${derniereReservation.nom} - ${derniereReservation.date}</option>`;
+                reservationItems.append(optionReservation);
 
-    // Afficher le client si présent
-    if (derniereReservation.client) {
-      reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${derniereReservation.client}</li></ul>`);
-    }
-  });
-}
+                // Afficher le client si présent
+                if (derniereReservation.client) {
+                    reservationItems.append(`<p><strong>Client :</strong></p><ul><li>${derniereReservation.client}</li></ul>`);
+                }
+            });
+        }
+
+        $("#reservationItemsDJ").on("change", function (event) {
+            event.preventDefault();
+            getBookingById(this.value)
+        });
+        $("#playlistForm").on("submit", function (event) {
+            event.preventDefault();
+           const idReservation = $('#reservationItemsDJ').find(":selected").val();
+           const playlistId = $('#playlistList').val();
+           let newPlaylistForReservation = {
+            'id': idReservation,
+            'playlist' : playlistId
+           }
+           sendData(`http://localhost:3002/booking/${id}`,newPlaylistForReservation)
+
+        });
+
+        function sendData(url, data) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log("Réservation envoyée avec succès :", xhr.responseText);
+                    } else {
+                        console.error("Erreur lors de l'envoi de la réservation :", xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send(JSON.stringify(data));
+        }
     </script>
 </body>
 

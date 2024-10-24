@@ -25,7 +25,7 @@ services:
     command: npm start
     networks:
       - dj-marcel
-    scale: 27
+    scale: 1
 
   api-reservation:
     build: ./djBackReservation

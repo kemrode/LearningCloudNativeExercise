@@ -66,10 +66,7 @@ app.put("/booking/:id", express.json(), (req, res) => {
     try {
         const id = req.params.id;
         var soireeToModify = bookingJson.soirees.find(s => s.id == id);
-        soireeToModify.nom = req.body.nom;
-        soireeToModify.date = req.body.date;
-        soireeToModify.playliste = req.body.playliste;
-        soireeToModify.client = req.body.client;
+        soireeToModify.playlist = req.body.playlist;
         res.status(200).json(soireeToModify);
     } catch (error) {
         res.status(400);
