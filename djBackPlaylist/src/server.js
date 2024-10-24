@@ -23,7 +23,7 @@ app.use('/playlists', playlistRoutes);
 const consul = require('consul');
 const consulName = "api-playlist";
 
-await consul.Agent.Service.register({ name: consulName, id: 123456789, address: "http://api-playlist", port: 2000 - 3001 });
+await consul.Agent.Service.register({ name: consulName, id: 123456789, address: "http://api-playlist", port: 3001 });
 
 app.get('/', (req, res) => {
   res.sendFile(patch.join(__dirname, 'public', 'index.html'));
