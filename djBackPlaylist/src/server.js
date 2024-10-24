@@ -24,6 +24,16 @@ app.get('/', (req, res) => {
   res.sendFile(patch.join(__dirname, 'public', 'index.html'));
 });
 
+//check if server is running
+app.get('/check', (req, res) => {
+  try {
+    res.status(200).json({ status: '200' });
+
+  } catch (error) {
+    res.status(500).json({ status: '500' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
