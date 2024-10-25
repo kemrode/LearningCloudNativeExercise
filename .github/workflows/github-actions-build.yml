@@ -1,8 +1,13 @@
 name: GitHub Actions Build
 run-name: ${{ github.actor }} running for integration
-on: [push]
+on: 
+  push:
+    branches:
+        - main
 jobs:
-   Build-for-continous-integration:
+   Automerge-into-main:
     runs-on: ubuntu-latest
     steps:
-        - run: echo "kikou bande de moules !"
+        - run: git checkout main
+        - run: git merge develop
+        - run: echo "On a mergé"
