@@ -1,0 +1,8 @@
+name: GitHub Actions Build
+run-name: ${{ github.actor }} running for integration
+on: [push]
+jobs:
+   Build-for-continous-integration:
+    runs-on: ubuntu-latest
+    steps:
+        - run: echo "kikou bande de moules !"
