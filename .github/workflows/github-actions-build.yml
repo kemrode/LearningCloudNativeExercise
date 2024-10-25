@@ -17,10 +17,7 @@ jobs:
             username: ${{ secrets.USER }}
             key: ${{ secrets.BOB }}
             script: |
-                pwd
-                cd LearningCloudNativeExercise
+                cd /srv/LearningCloudNativeExercise
                 git pull origin main
                 docker-compose down
                 docker-compose up -d --build
-        - name: Communication avec le serveur
-          run: ssh -i maalsi@${{ secrets.IPADRESS}} docker ls
