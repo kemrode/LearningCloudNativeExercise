@@ -18,6 +18,4 @@ jobs:
             key: ${{ secrets.BOB }}
             script: |
                 cd ./srv/LearningCloudNativeExercise
-                git pull origin main
-                docker-compose down
-                docker-compose up -d --build
+                git pull main
