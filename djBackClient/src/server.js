@@ -30,5 +30,6 @@ app.get('/check', (req, res) => {
 });
 
 app.listen(PORT, "34.155.190.101", () => {
+  console.log("ceci est un test");
   console.log(`Server is running on port ${PORT}`);
 });
