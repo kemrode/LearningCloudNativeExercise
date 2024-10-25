@@ -42,7 +42,7 @@
     <script>
         let reservations = []
         getBooking();
-        fetchData('http://localhost:3001/playlists')
+        fetchData('http://34.155.190.101:3001/playlists')
             .then((res) => {
                 setPlaylists(res.playlist)
             })
@@ -95,7 +95,7 @@
             }
         }
         function getBooking() {
-            fetchData('http://localhost:3002/booking')
+            fetchData('http://34.155.190.101:3002/booking')
                 .then((res) => {
                     reservations = res.soirees;
                     setReservations(res.soirees);
@@ -107,7 +107,7 @@
         }
 
         function getBookingById(id) {
-            fetchData(`http://localhost:3002/booking/${id}`)
+            fetchData(`http://34.155.190.101:3002/booking/${id}`)
                 .then((res) => {
                     $('#soireePlaylist').empty().append(id)
                     $('#playlistList').empty()
@@ -167,7 +167,7 @@ function supprimerObjetParId(tableauObjets, idASupprimer) {
             'id': idReservation,
             'playlist' : playlistId
            }
-           sendData(`http://localhost:3002/booking/${id}`,newPlaylistForReservation)
+           sendData(`http://34.155.190.101:3002/booking/${id}`,newPlaylistForReservation)
 
         });
 

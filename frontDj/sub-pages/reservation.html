@@ -93,12 +93,12 @@
             };
 
             // Envoi de la nouvelle réservation au backend
-            sendData('http://localhost:3002/booking', newReservation);
+            sendData('http://34.155.190.101:3002/booking', newReservation);
             // Mise à jour de la liste des réservations locales et affichage
             getBooking()
         });
         function getBooking(){
-            fetchData('http://localhost:3002/booking')
+            fetchData('http://34.155.190.101:3002/booking')
             .then((res) => {
                 reservations = res.soirees;
                 setReservations(res.soirees);

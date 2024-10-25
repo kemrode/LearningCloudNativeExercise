@@ -114,6 +114,6 @@ async function GetPlaylist(id) {
     })
 }
 
-app.listen(PORT, "34.155.190.101", () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log("serveur à l'écoute");
 });

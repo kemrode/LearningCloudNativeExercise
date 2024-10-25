@@ -50,7 +50,7 @@ function setClients(clients) {
 }
 
 function fetchClients(){
-    $.get("localhost:3000/client/", function(data, status){
+    $.get("34.155.190.101:3000/client/", function(data, status){
     if(data){
         return data
     }
@@ -58,7 +58,7 @@ function fetchClients(){
 }
 
 function addClient(client){
-    $.post("localhost:3000/client/", function(data, status){
+    $.post("34.155.190.101:3000/client/", function(data, status){
     if(data){
         return status
     }
