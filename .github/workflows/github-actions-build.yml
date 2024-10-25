@@ -11,16 +11,15 @@ jobs:
         - name: clone repository
           uses: actions/checkout@v2
         - name: Deploy project with ssh
-          uses: easingthemes/ssh-deploy@main
+          uses: appleboy/ssh-action@v0.1.7
           with:
-            SSH_PRIVATE_KEY: ${{ secrets.BOB }}
-            REMOTE_HOST: ${{ secrets.IPADRESS }}
-            REMOTE_USER: ${{ secrets.USER }}
-            SOURCE: "dist"
-            TARGET: "/"
-        - name: cd repo
-          run: cd srv/LearningCloudNativeExercise
-        - name: Pull branch main
-          run: git pull origin main
-        - name: build docker container
-          run: docker-compose up -d --build
+            host: ${{ secrets.IPADRESS }}
+            username: ${{ secrets.USER }}
+            key: ${{ secrets.BOB }}
+            script: |
+                cd /srv/LearningCloudNativeExercise
+                git pull origin main
+                docker-compose down
+                docker-compose up -d --build
+        - name: Communication avec le serveur
+          run: ssh -i maalsi@${{ secrets.IPADRESS}} docker ls
