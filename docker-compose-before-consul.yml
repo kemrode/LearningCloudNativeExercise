@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  frontdj:
+    build: ./frontDj
+    ports:
+      - "3004:3004"
+    command: npm start
+    networks:
+      - dj-marcel
+
+  api-client:
+    build: ./djBackClient
+    ports:
+      - "3000:3000"
+    command: npm start
+    networks:
+      - dj-marcel
+
+  api-playlist:
+    build: ./djBackPlaylist
+    ports:
+      - "2000-3001:3001"
+    command: npm start
+    networks:
+      - dj-marcel
+    scale: 27
+
+  api-reservation:
+    build: ./djBackReservation
+    ports:
+      - "3002:3002"
+    command: npm start
+    networks:
+      - dj-marcel
+
+networks:
+  dj-marcel:
+    driver: bridge
