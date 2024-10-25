@@ -1,8 +1,26 @@
-name: GitHub Actions Build
-run-name: ${{ github.actor }} running for integration
-on: [push]
+name: Github Actions Build
+on:
+  push:
+   branches:
+     - main
+
 jobs:
-   Build-for-continous-integration:
+  Docker:
     runs-on: ubuntu-latest
     steps:
-        - run: echo "kikou bande de moules !"
+        - name: clone repository
+          uses: actions/checkout@v2
+        - name: cd repo
+          run: cd srv/LearningCloudNativeExercise
+        - name: Pull branch main
+          run: git pull origin main
+        - name: build docker container
+          run: docker-compose up -d --build
+        - name: Deploy project with ssh
+          uses: easingthemes/ssh-deploy@main
+          with:
+            SSH_PRIVATE_KEY: ${{ secrets.BOB }}
+            REMOTE_HOST: ${{ secrets.IPADRESS }}
+            REMOTE_USER: ${{ secrets.USER }}
+            SOURCE: "dist"
+            TARGET: "/"
